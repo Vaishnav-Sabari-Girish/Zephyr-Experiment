@@ -14,3 +14,4 @@ west flash
 
 1. [Printing to console](./print_console/src/main.c)
 2. [Blink LED](./blinky/src/main.c)
+3. [Button Polling](./button_polling/src/main.c)
