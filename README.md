@@ -29,12 +29,12 @@ This allows you to create zephyr apps anywhere in your system.
 
 ## Scripts
 
-I have created 2 scripts `batch_build.d` and `batch_clean.d` which allows you to
-build all projects and remove build artifacts from all projects respectively.
+I have created scripts for making user experience better.
 
 Just run:
 
 ```bash 
 ./scripts/batch_build.d          # To build 
 ./scripts/batch_clean.d          # To clean
+./scripts/batch_size.d           # To check binary size
 ```
