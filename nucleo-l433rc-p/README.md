@@ -17,3 +17,4 @@ west flash
 3. [Button Polling](./button_polling/src/main.c)
 4. [Button Interrupts](./button_interrupts/src/main.c)
 5. [Threads and Semaphores](./thread_sync/src/main.c)
+6. [Message Queue](./msg_queue/src/main.c)
