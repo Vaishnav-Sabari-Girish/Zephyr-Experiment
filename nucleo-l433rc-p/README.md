@@ -16,3 +16,4 @@ west flash
 2. [Blink LED](./blinky/src/main.c)
 3. [Button Polling](./button_polling/src/main.c)
 4. [Button Interrupts](./button_interrupts/src/main.c)
+5. [Threads and Semaphores](./thread_sync/src/main.c)
