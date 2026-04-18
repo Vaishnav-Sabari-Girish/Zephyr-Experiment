@@ -14,68 +14,71 @@ import std.algorithm : filter;
 import colored;
 
 void main() {
-    string boardName = "nucleo_l433rc_p"; 
-    string targetDir = "nucleo-l433rc-p";
+    // Map the folder name to the required Zephyr board target
+    string[string] targetBoards = [
+        "nucleo-l433rc-p": "nucleo_l433rc_p",
+        "nrf52840dk": "nrf52840dk/nrf52840"
+    ];
 
-    writeln("🚀 Starting Zephyr Batch Builder...".blue.bold);
-    writeln("Scanning directory: ".cyan, targetDir.white.bold, " for target: ".cyan, boardName.white.bold, "\n");
+    writeln("🚀 Starting Zephyr Multi-Board Batch Builder...".blue.bold);
 
-    if (!exists(targetDir) || !isDir(targetDir)) {
-        writeln("Error: Target directory does not exist.".red.bold);
-        return;
-    }
-
-    auto entries = dirEntries(targetDir, SpanMode.shallow).filter!(e => e.isDir);
-    
     int successCount = 0;
     int failCount = 0;
 
-    foreach (entry; entries) {
-        string appPath = entry.name;
-        string appName = baseName(appPath);
-        string cmakeFile = buildPath(appPath, "CMakeLists.txt");
+    foreach (targetDir, boardName; targetBoards) {
+        writeln("\n📁 Scanning directory: ".cyan, targetDir.white.bold, " for target: ".cyan, boardName.white.bold);
 
-        if (exists(cmakeFile)) {
-            writeln("--------------------------------------------------");
-            writeln("🔨 Building: ".magenta, appName.white.bold);
-            writeln("--------------------------------------------------");
+        if (!exists(targetDir) || !isDir(targetDir)) {
+            writeln("⚠️  Directory not found, skipping: ".yellow, targetDir);
+            continue;
+        }
 
-            string buildDir = buildPath("build", appName);
+        auto entries = dirEntries(targetDir, SpanMode.shallow).filter!(e => e.isDir);
 
-            // Pass the CMake flag to ensure compile_commands.json is always generated
-            string[] cmd = [
-                "west", "build", "-b", boardName, "-d", buildDir, appPath,
-                "--", "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON"
-            ];
+        foreach (entry; entries) {
+            string appPath = entry.name;
+            string appName = baseName(appPath);
+            string cmakeFile = buildPath(appPath, "CMakeLists.txt");
 
-            auto pid = spawnProcess(cmd);
-            auto exitCode = wait(pid);
+            if (exists(cmakeFile)) {
+                writeln("--------------------------------------------------");
+                writeln("🔨 Building: ".magenta, appName.white.bold);
+                writeln("--------------------------------------------------");
 
-            if (exitCode == 0) {
-                writeln("✅ Success: ".green.bold, appName.green);
-                successCount++;
+                // Segregate builds to prevent collisions (e.g. build/nrf52840dk/print_console)
+                string buildDir = buildPath("build", targetDir, appName);
 
-                // --- NEOVIM LSP SYMLINKING STEP ---
-                string compileCmdsSource = buildPath(buildDir, "compile_commands.json").absolutePath;
-                string compileCmdsTarget = buildPath(appPath, "compile_commands.json").absolutePath;
+                string[] cmd = [
+                    "west", "build", "-b", boardName, "-d", buildDir, appPath,
+                    "--", "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON"
+                ];
 
-                if (exists(compileCmdsSource)) {
-                    // Remove existing symlink/file to prevent FileExists errors on rebuilds
-                    if (exists(compileCmdsTarget)) {
-                        remove(compileCmdsTarget);
+                auto pid = spawnProcess(cmd);
+                auto exitCode = wait(pid);
+
+                if (exitCode == 0) {
+                    writeln("✅ Success: ".green.bold, buildPath(targetDir, appName).green);
+                    successCount++;
+
+                    string compileCmdsSource = buildPath(buildDir, "compile_commands.json").absolutePath;
+                    string compileCmdsTarget = buildPath(appPath, "compile_commands.json").absolutePath;
+
+                    if (exists(compileCmdsSource)) {
+                        if (exists(compileCmdsTarget)) {
+                            remove(compileCmdsTarget);
+                        }
+                        
+                        symlink(compileCmdsSource, compileCmdsTarget);
+                        writeln("🔗 Symlinked compile_commands.json for Neovim (clangd)".cyan);
+                    } else {
+                        writeln("⚠️ Warning: compile_commands.json not found in build directory.".yellow);
                     }
+                    writeln(); 
                     
-                    // Create the symlink
-                    symlink(compileCmdsSource, compileCmdsTarget);
-                    writeln("🔗 Symlinked compile_commands.json for Neovim (clangd)".cyan);
                 } else {
-                    writeln("⚠️ Warning: compile_commands.json not found in build directory.".yellow);
+                    writeln("❌ Failed: ".red.bold, buildPath(targetDir, appName).red, " (Exit Code: ".red, exitCode, ")\n".red);
+                    failCount++;
                 }
-                writeln(); // Blank line for spacing
-                
-            } else {
-                writeln("❌ Failed: ".red.bold, appName.red, " (Exit Code: ".red, exitCode, ")\n".red);
-                failCount++;
             }
         }
     }

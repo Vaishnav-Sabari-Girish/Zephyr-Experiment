@@ -18,86 +18,88 @@ import std.format : format;
 import colored;
 
 void main() {
-    string targetDir = "nucleo-l433rc-p";
+    string[] targetDirs = ["nucleo-l433rc-p", "nrf52840dk"];
 
-    writeln("📊 Starting Firmware Size Profiler...".blue.bold);
+    writeln("📊 Starting Multi-Board Firmware Size Profiler...".blue.bold);
     
-    if (!exists(targetDir) || !isDir(targetDir)) {
-        writeln("Error: Target directory does not exist.".red.bold);
-        return;
-    }
-
-    auto entries = dirEntries(targetDir, SpanMode.shallow).filter!(e => e.isDir);
-    
-    // Updated headers to indicate KB
-    auto table = Table(["Application", "Text/ROM (KB)", "Data/RAM (KB)", "BSS (KB)", "Total (KB)"]);
+    // Added "Board" to the table headers
+    auto table = Table(["Board", "Application", "Text/ROM (KB)", "Data/RAM (KB)", "BSS (KB)", "Total (KB)"]);
 
     int foundCount = 0;
 
-    foreach (entry; entries) {
-        string appPath = entry.name;
-        string appName = baseName(appPath);
-        
-        string elfFile = buildPath(appPath, "build", "zephyr", "zephyr.elf");
-        
-        if (!exists(elfFile)) {
-            elfFile = buildPath("build", appName, "zephyr", "zephyr.elf");
-        }
+    foreach (targetDir; targetDirs) {
+        if (!exists(targetDir) || !isDir(targetDir)) continue;
 
-        if (exists(elfFile)) {
-            foundCount++;
-            auto sizeResult = execute(["size", elfFile]);
+        auto entries = dirEntries(targetDir, SpanMode.shallow).filter!(e => e.isDir);
+
+        foreach (entry; entries) {
+            string appPath = entry.name;
+            string appName = baseName(appPath);
             
-            if (sizeResult.status == 0) {
-                string[] lines = sizeResult.output.strip().splitLines();
+            // Check local build directory first
+            string elfFile = buildPath(appPath, "build", "zephyr", "zephyr.elf");
+            
+            // Fallback to our new segregated batch_builder directory
+            if (!exists(elfFile)) {
+                elfFile = buildPath("build", targetDir, appName, "zephyr", "zephyr.elf");
+            }
+
+            if (exists(elfFile)) {
+                foundCount++;
+                auto sizeResult = execute(["size", elfFile]);
                 
-                if (lines.length > 1) {
-                    string[] columns = lines[1].split();
-                    // size output: text data bss dec hex filename
-                    if (columns.length >= 4) {
-                        try {
-                            // Convert string to float and divide by 1024 for KB
-                            float textKB  = columns[0].to!float / 1024.0;
-                            float dataKB  = columns[1].to!float / 1024.0;
-                            float bssKB   = columns[2].to!float / 1024.0;
-                            float totalKB = columns[3].to!float / 1024.0; // Using 'dec' instead of 'hex'
+                if (sizeResult.status == 0) {
+                    string[] lines = sizeResult.output.strip().splitLines();
+                    
+                    if (lines.length > 1) {
+                        string[] columns = lines[1].split();
+                        if (columns.length >= 4) {
+                            try {
+                                float textKB  = columns[0].to!float / 1024.0;
+                                float dataKB  = columns[1].to!float / 1024.0;
+                                float bssKB   = columns[2].to!float / 1024.0;
+                                float totalKB = columns[3].to!float / 1024.0; 
 
-                            // Format to 2 decimal places
-                            string textStr  = format("%.2f", textKB);
-                            string dataStr  = format("%.2f", dataKB);
-                            string bssStr   = format("%.2f", bssKB);
-                            string totalStr = format("%.2f", totalKB);
+                                string textStr  = format("%.2f", textKB);
+                                string dataStr  = format("%.2f", dataKB);
+                                string bssStr   = format("%.2f", bssKB);
+                                string totalStr = format("%.2f", totalKB);
 
-                            table.addRow([
-                                appName.white.bold.to!string, 
-                                textStr.green.to!string, 
-                                dataStr.yellow.to!string, 
-                                bssStr.magenta.to!string, 
-                                totalStr.cyan.to!string
-                            ]);
-                        } catch (Exception e) {
-                            table.addRow([
-                                appName.white.bold.to!string, 
-                                "Parse Error".red.to!string, 
-                                "-", "-", "-"
-                            ]);
+                                table.addRow([
+                                    targetDir.cyan.to!string,
+                                    appName.white.bold.to!string, 
+                                    textStr.green.to!string, 
+                                    dataStr.yellow.to!string, 
+                                    bssStr.magenta.to!string, 
+                                    totalStr.cyan.to!string
+                                ]);
+                            } catch (Exception e) {
+                                table.addRow([
+                                    targetDir.cyan.to!string,
+                                    appName.white.bold.to!string, 
+                                    "Parse Error".red.to!string, 
+                                    "-", "-", "-"
+                                ]);
+                            }
                         }
                     }
+                } else {
+                    table.addRow([
+                        targetDir.cyan.to!string,
+                        appName.white.bold.to!string, 
+                        "Error".red.to!string, 
+                        "-", "-", "-"
+                    ]);
                 }
-            } else {
-                table.addRow([
-                    appName.white.bold.to!string, 
-                    "Error".red.to!string, 
-                    "-", "-", "-"
-                ]);
             }
         }
     }
 
     if (foundCount > 0) {
+        writeln(); // Add a blank line for spacing before the table prints
         table.print();
     } else {
-        writeln("No compiled binaries found. Run your build script first!".yellow);
+        writeln("\nNo compiled binaries found. Run your build script first!".yellow);
     }
 }
 
