@@ -31,7 +31,15 @@ This allows you to create zephyr apps anywhere in your system.
 
 I have created scripts for making user experience better.
 
-Just run:
+If you have `just` install run
+
+```bash
+just build
+just size 
+just clean
+```
+
+Or run:
 
 ```bash 
 ./scripts/batch_build.d          # To build 
