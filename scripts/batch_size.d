@@ -8,9 +8,9 @@
 
 import std.stdio : writeln, writefln, writef, write; 
 import std.file : dirEntries, SpanMode, isDir, exists;
-import std.path : buildPath, baseName;
+import std.path : buildPath, baseName, dirName;
 import std.process : execute;
-import std.algorithm : filter;
+import std.algorithm : filter, canFind;
 import std.string : splitLines, split, strip;
 import std.regex : ctRegex, replaceAll;
 import std.conv : to; 
@@ -22,7 +22,6 @@ void main() {
 
     writeln("📊 Starting Multi-Board Firmware Size Profiler...".blue.bold);
     
-    // Added "Board" to the table headers
     auto table = Table(["Board", "Application", "Text/ROM (KB)", "Data/RAM (KB)", "BSS (KB)", "Total (KB)"]);
 
     int foundCount = 0;
@@ -30,16 +29,18 @@ void main() {
     foreach (targetDir; targetDirs) {
         if (!exists(targetDir) || !isDir(targetDir)) continue;
 
-        auto entries = dirEntries(targetDir, SpanMode.shallow).filter!(e => e.isDir);
+        // DEEP SEARCH
+        auto entries = dirEntries(targetDir, SpanMode.depth)
+            .filter!(e => e.isFile && baseName(e.name) == "CMakeLists.txt" && !e.name.canFind("/build/"));
 
         foreach (entry; entries) {
-            string appPath = entry.name;
+            string appPath = dirName(entry.name);
             string appName = baseName(appPath);
             
             // Check local build directory first
             string elfFile = buildPath(appPath, "build", "zephyr", "zephyr.elf");
             
-            // Fallback to our new segregated batch_builder directory
+            // Fallback to our segregated batch_builder directory
             if (!exists(elfFile)) {
                 elfFile = buildPath("build", targetDir, appName, "zephyr", "zephyr.elf");
             }
@@ -96,7 +97,7 @@ void main() {
     }
 
     if (foundCount > 0) {
-        writeln(); // Add a blank line for spacing before the table prints
+        writeln(); 
         table.print();
     } else {
         writeln("\nNo compiled binaries found. Run your build script first!".yellow);

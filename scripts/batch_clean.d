@@ -8,8 +8,8 @@
 
 import std.stdio : writeln, writefln;
 import std.file : dirEntries, SpanMode, isDir, exists, remove, rmdirRecurse;
-import std.path : buildPath, baseName;
-import std.algorithm : filter;
+import std.path : buildPath, baseName, dirName;
+import std.algorithm : canFind;
 import colored;
 
 void main() {
@@ -28,32 +28,36 @@ void main() {
             continue;
         }
 
-        auto entries = dirEntries(targetDir, SpanMode.shallow).filter!(e => e.isDir);
+        // PHASE 1: GATHER
+        // Collect all project paths into a static array first so we don't 
+        // mutate the file system while the iterator is actively crawling it.
+        string[] appPaths;
+        foreach (entry; dirEntries(targetDir, SpanMode.depth)) {
+            if (entry.isFile && baseName(entry.name) == "CMakeLists.txt" && !entry.name.canFind("/build/")) {
+                appPaths ~= dirName(entry.name);
+            }
+        }
 
-        foreach (entry; entries) {
-            string appPath = entry.name;
-            string appName = baseName(appPath);
-            string cmakeFile = buildPath(appPath, "CMakeLists.txt");
+        // PHASE 2: DESTROY
+        // Now it is perfectly safe to delete the build folders
+        foreach (appPath; appPaths) {
+            bool cleanedSomething = false;
+            string compileCmdsTarget = buildPath(appPath, "compile_commands.json");
+            string localBuildDir = buildPath(appPath, "build"); 
 
-            if (exists(cmakeFile)) {
-                bool cleanedSomething = false;
-                string compileCmdsTarget = buildPath(appPath, "compile_commands.json");
-                string localBuildDir = buildPath(appPath, "build"); 
+            if (exists(compileCmdsTarget)) {
+                remove(compileCmdsTarget);
+                cleanedSomething = true;
+            }
+            
+            if (exists(localBuildDir) && isDir(localBuildDir)) {
+                rmdirRecurse(localBuildDir);
+                cleanedSomething = true;
+            }
 
-                if (exists(compileCmdsTarget)) {
-                    remove(compileCmdsTarget);
-                    cleanedSomething = true;
-                }
-                
-                if (exists(localBuildDir) && isDir(localBuildDir)) {
-                    rmdirRecurse(localBuildDir);
-                    cleanedSomething = true;
-                }
-
-                if (cleanedSomething) {
-                    writeln("🗑️  Cleaned locals: ".green, buildPath(targetDir, appName).white.bold);
-                    cleanedCount++;
-                }
+            if (cleanedSomething) {
+                writeln("🗑️  Cleaned locals: ".green, appPath.white.bold);
+                cleanedCount++;
             }
         }
     }

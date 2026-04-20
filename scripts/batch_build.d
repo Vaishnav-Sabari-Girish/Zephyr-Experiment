@@ -8,13 +8,12 @@
 
 import std.stdio : writeln, writefln;
 import std.file : dirEntries, SpanMode, isDir, exists, symlink, remove;
-import std.path : buildPath, baseName, absolutePath;
+import std.path : buildPath, baseName, dirName, absolutePath;
 import std.process : spawnProcess, wait;
-import std.algorithm : filter;
+import std.algorithm : filter, canFind;
 import colored;
 
 void main() {
-    // Map the folder name to the required Zephyr board target
     string[string] targetBoards = [
         "nucleo-l433rc-p": "nucleo_l433rc_p",
         "nrf52840dk": "nrf52840dk/nrf52840"
@@ -33,52 +32,51 @@ void main() {
             continue;
         }
 
-        auto entries = dirEntries(targetDir, SpanMode.shallow).filter!(e => e.isDir);
+        // DEEP SEARCH
+        auto entries = dirEntries(targetDir, SpanMode.depth)
+            .filter!(e => e.isFile && baseName(e.name) == "CMakeLists.txt" && !e.name.canFind("/build/"));
 
         foreach (entry; entries) {
-            string appPath = entry.name;
+            string appPath = dirName(entry.name);
             string appName = baseName(appPath);
-            string cmakeFile = buildPath(appPath, "CMakeLists.txt");
+            
+            writeln("--------------------------------------------------");
+            writeln("🔨 Building: ".magenta, appPath.white.bold);
+            writeln("--------------------------------------------------");
 
-            if (exists(cmakeFile)) {
-                writeln("--------------------------------------------------");
-                writeln("🔨 Building: ".magenta, appName.white.bold);
-                writeln("--------------------------------------------------");
+            // Segregate builds to prevent collisions
+            string buildDir = buildPath("build", targetDir, appName);
 
-                // Segregate builds to prevent collisions (e.g. build/nrf52840dk/print_console)
-                string buildDir = buildPath("build", targetDir, appName);
+            string[] cmd = [
+                "west", "build", "-b", boardName, "-d", buildDir, appPath,
+                "--", "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON"
+            ];
 
-                string[] cmd = [
-                    "west", "build", "-b", boardName, "-d", buildDir, appPath,
-                    "--", "-DCMAKE_EXPORT_COMPILE_COMMANDS=ON"
-                ];
+            auto pid = spawnProcess(cmd);
+            auto exitCode = wait(pid);
 
-                auto pid = spawnProcess(cmd);
-                auto exitCode = wait(pid);
+            if (exitCode == 0) {
+                writeln("✅ Success: ".green.bold, appPath.green);
+                successCount++;
 
-                if (exitCode == 0) {
-                    writeln("✅ Success: ".green.bold, buildPath(targetDir, appName).green);
-                    successCount++;
+                string compileCmdsSource = buildPath(buildDir, "compile_commands.json").absolutePath;
+                string compileCmdsTarget = buildPath(appPath, "compile_commands.json").absolutePath;
 
-                    string compileCmdsSource = buildPath(buildDir, "compile_commands.json").absolutePath;
-                    string compileCmdsTarget = buildPath(appPath, "compile_commands.json").absolutePath;
-
-                    if (exists(compileCmdsSource)) {
-                        if (exists(compileCmdsTarget)) {
-                            remove(compileCmdsTarget);
-                        }
-                        
-                        symlink(compileCmdsSource, compileCmdsTarget);
-                        writeln("🔗 Symlinked compile_commands.json for Neovim (clangd)".cyan);
-                    } else {
-                        writeln("⚠️ Warning: compile_commands.json not found in build directory.".yellow);
+                if (exists(compileCmdsSource)) {
+                    if (exists(compileCmdsTarget)) {
+                        remove(compileCmdsTarget);
                     }
-                    writeln(); 
                     
+                    symlink(compileCmdsSource, compileCmdsTarget);
+                    writeln("🔗 Symlinked compile_commands.json for Neovim (clangd)".cyan);
                 } else {
-                    writeln("❌ Failed: ".red.bold, buildPath(targetDir, appName).red, " (Exit Code: ".red, exitCode, ")\n".red);
-                    failCount++;
+                    writeln("⚠️ Warning: compile_commands.json not found in build directory.".yellow);
                 }
+                writeln(); 
+                
+            } else {
+                writeln("❌ Failed: ".red.bold, appPath.red, " (Exit Code: ".red, exitCode, ")\n".red);
+                failCount++;
             }
         }
     }
