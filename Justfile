@@ -13,3 +13,7 @@ clean:
 # Display a memory profiling table for all compiled binaries
 size:
     @./scripts/batch_size.d
+
+# Inspect generated KConfig files 
+check config-name:
+    @./scripts/batch_check.d {{config-name}}
