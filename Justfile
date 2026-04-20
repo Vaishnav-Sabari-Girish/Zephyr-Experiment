@@ -17,3 +17,6 @@ size:
 # Inspect generated KConfig files 
 check config-name:
     @./scripts/batch_check.d {{config-name}}
+
+dts dts_node:
+    @./scripts/batch_dts.d {{dts_node}}
