@@ -19,4 +19,4 @@ west flash
     2. [Button Interrupts](./button_interrupt/README.md)
 4. Threads and Semaphores
     1. [One Button](./threads_semaphores/one_button_thread_semaphore/src/main.c)
-    2. All Buttons
+    2. [All Buttons](./threads_semaphores/all_buttons_semaphores/src/main.c)
