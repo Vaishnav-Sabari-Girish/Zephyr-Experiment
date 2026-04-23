@@ -18,5 +18,5 @@ west flash
     1. [Button Polling](./button_polling/README.md)
     2. [Button Interrupts](./button_interrupt/README.md)
 4. Threads and Semaphores
-    1. [One Button](./threads_semaphores/one_button_thread_semaphore/src/)
+    1. [One Button](./threads_semaphores/one_button_thread_semaphore/src/main.c)
     2. All Buttons
