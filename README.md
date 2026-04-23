@@ -37,6 +37,8 @@ If you have `just` install run
 just build
 just size 
 just clean
+just check <config_name>   # Eg: just check GPIO
+just dts <dts_node>        # Eg: just check button0
 ```
 
 Or run:
@@ -45,4 +47,6 @@ Or run:
 ./scripts/batch_build.d          # To build 
 ./scripts/batch_clean.d          # To clean
 ./scripts/batch_size.d           # To check binary size
+./scripts/batch_check.d <config_name>         # To check the enabled and disabled configs in KConfig
+./scripts/batch_dts.d   <dts_node>            # To check the data regarding specific DTS node
 ```
