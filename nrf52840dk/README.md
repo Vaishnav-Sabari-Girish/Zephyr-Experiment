@@ -20,3 +20,4 @@ west flash
 4. Threads and Semaphores
     1. [One Button](./threads_semaphores/one_button_thread_semaphore/src/main.c)
     2. [All Buttons](./threads_semaphores/all_buttons_semaphores/src/main.c)
+5. [Message Queue](./message_queue/src/main.c)
