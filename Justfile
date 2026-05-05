@@ -10,6 +10,7 @@ build:
 clean:
     @./scripts/batch_clean.d
     @find . -type d -name ".ccls-cache" -exec rm -rf {} +
+    @find . -type d -name ".cache" -exec rm -rf {} +
 
 # Display a memory profiling table for all compiled binaries
 size:

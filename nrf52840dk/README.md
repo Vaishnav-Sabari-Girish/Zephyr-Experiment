@@ -24,3 +24,4 @@ west flash
 6. [UART shell](./uart_shell/src/main.c)
 7. [Logging](./logging/src/main.c)
 8. [Serial Communication (UART)](./serial_communication/src/main.c)
+9. [Serial LED control](./led_control_serial_comm/src/main.c)
