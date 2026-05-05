@@ -52,24 +52,36 @@ int main(void)
   }
 
   while (1) {
-    uint8_t accel_data[6] = {0};
+    uint8_t accel_data[14] = {0};
 
     ret = i2c_burst_read_dt(&dev_i2c, MPU9250_REG_ACCEL_START, accel_data, sizeof(accel_data));
 
     if (ret != 0) {
       LOG_ERR("Failed to burst read accelerometer");
     } else {
-      // Raw values
+      // Raw values (accelerometer)
       int16_t accel_x = (accel_data[0] << 8) | accel_data[1];
       int16_t accel_y = (accel_data[2] << 8) | accel_data[3];
       int16_t accel_z = (accel_data[4] << 8) | accel_data[5];
+
+      // Raw values (Gyroscope)
+      
+      int16_t gyro_x = (accel_data[8] << 8) | accel_data[9];
+      int16_t gyro_y = (accel_data[10] << 8) | accel_data[11];
+      int16_t gyro_z = (accel_data[12] << 8) | accel_data[13];
 
       // Actual values [G]
       float a_x = (float)accel_x / 16384.0f;
       float a_y = (float)accel_y / 16384.0f;
       float a_z = (float)accel_z / 16384.0f;
 
+      // Actual values +/- 250 DPS (131.0 LSB/DPS)
+      float g_x = (float)gyro_x / 131.0f;
+      float g_y = (float)gyro_y / 131.0f;
+      float g_z = (float)gyro_z / 131.0f;
+
       LOG_INF("Accel X: %.2f  | Y: %.2f  | Z: %.2f", a_x, a_y, a_z);
+      LOG_INF("Gyro X: %.2f  | Y: %.2f  | Z: %.2f", g_x, g_y, g_z);
     }
     k_msleep(500);
   }
