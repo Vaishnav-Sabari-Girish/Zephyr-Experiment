@@ -9,6 +9,7 @@ build:
 # Clean all build artifacts, local folders, and symlinks
 clean:
     @./scripts/batch_clean.d
+    @find . -type d -name ".ccls-cache" -exec rm -rf {} +
 
 # Display a memory profiling table for all compiled binaries
 size:
