@@ -22,3 +22,4 @@ west flash
     2. [All Buttons](./threads_semaphores/all_buttons_semaphores/src/main.c)
 5. [Message Queue](./message_queue/src/main.c)
 6. [UART shell](./uart_shell/src/main.c)
+7. [Logging](./logging/src/main.c)
