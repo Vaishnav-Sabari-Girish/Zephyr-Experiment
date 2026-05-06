@@ -26,3 +26,4 @@ west flash
 8. [Serial Communication (UART)](./serial_communication/src/main.c)
 9. [Serial LED control](./led_control_serial_comm/src/main.c)
 10. [Sensors](./sensors/SENSORS.md)
+11. [Time Slicing](./time_slicing/src/main.c)
