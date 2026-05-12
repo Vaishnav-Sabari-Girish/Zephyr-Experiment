@@ -4,4 +4,4 @@
    - [MPU9250](./i2c/mpu9250_program/src/main.c)
 
 2. SPI
-   - [MPU9250]
+3. [DHT22](./dht22_sensor/src/main.c)

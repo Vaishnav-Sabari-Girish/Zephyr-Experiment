@@ -1,0 +1,12 @@
+/ {
+    dht22 {
+        compatible = "aosong,dht";
+        status = "okay";
+        /* Map the data line to P0.11. 
+         * The DHT requires a pull-up resistor, and the protocol is active low.
+         */
+        dio-gpios = <&gpio1 11 GPIO_ACTIVE_LOW>;
+        /* Include this empty property to specify it's a DHT22, not a DHT11 */
+        dht22;
+    };
+};
