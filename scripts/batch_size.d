@@ -18,7 +18,7 @@ import std.format : format;
 import colored;
 
 void main() {
-    string[] targetDirs = ["nucleo-l433rc-p", "nrf52840dk"];
+    string[] targetDirs = ["nucleo-l433rc-p", "nrf52840dk", "frdm_mcxa156"];
 
     writeln("📊 Starting Multi-Board Firmware Size Profiler...".blue.bold);
     

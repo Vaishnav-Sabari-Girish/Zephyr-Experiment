@@ -16,7 +16,8 @@ import colored;
 void main() {
     string[string] targetBoards = [
         "nucleo-l433rc-p": "nucleo_l433rc_p",
-        "nrf52840dk": "nrf52840dk/nrf52840"
+        "nrf52840dk": "nrf52840dk/nrf52840",
+        "frdm_mcxa156": "frdm_mcxa156"
     ];
 
     writeln("🚀 Starting Zephyr Multi-Board Batch Builder...".blue.bold);
