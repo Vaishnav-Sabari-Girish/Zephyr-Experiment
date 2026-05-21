@@ -5,6 +5,7 @@ following boards
 
 1. [STM32 Nucleo L433RC-P](./nucleo-l433rc-p/README.md)
 2. [Nordic nrf52840dk](./nrf52840dk/README.md)
+3. [NXP FRDM-MCXA156](./frdm_mcxa156/README.md)
 
 ## Steps for reproduction of environment
 
