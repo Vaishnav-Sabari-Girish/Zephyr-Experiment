@@ -1,0 +1,11 @@
+build:
+    @west build -b frdm_mcxa156 .
+
+pristine:
+    @west build -p always -b frdm_mcxa156 .
+
+flash:
+    @west flash --runner jlink
+
+clean:
+    @rm -rf build compile_commands.json

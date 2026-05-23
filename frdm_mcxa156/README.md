@@ -6,3 +6,4 @@
 2. [Button Polling](./button_polling/src/main.c)
 3. [Button Interrupt](./button_interrupt/src/main.c)
 4. [Threads and Semaphores](./threads_semaphores/src/main.c)
+5. [Message Queue](./message_queue/src/main.c)
