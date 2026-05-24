@@ -7,3 +7,4 @@
 3. [Button Interrupt](./button_interrupt/src/main.c)
 4. [Threads and Semaphores](./threads_semaphores/src/main.c)
 5. [Message Queue](./message_queue/src/main.c)
+6. [UART Shell](./uart_shell/src/main.c)
