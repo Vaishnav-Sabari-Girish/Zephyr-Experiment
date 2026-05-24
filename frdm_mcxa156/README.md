@@ -9,3 +9,4 @@
 5. [Message Queue](./message_queue/src/main.c)
 6. [UART Shell](./uart_shell/src/main.c)
 7. [Sensors](./sensors/README.md)
+8. [PWM](./pwm_led/README.md)

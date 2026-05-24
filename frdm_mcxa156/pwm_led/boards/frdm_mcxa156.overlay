@@ -1,0 +1,51 @@
+/*
+ * Board overlay for FRDM-MCXA156 – PWM LED fading
+ *
+ * Pin mapping from MCXA156VLL-pinctrl.h:
+ *   P3_12 (Red LED)   → PWM1_A2_P3_12  = FlexPWM1 SM2 PWMA  (ALT7)
+ *   P3_13 (Green LED) → PWM1_B2_P3_13  = FlexPWM1 SM2 PWMB  (ALT7)
+ *   P3_0  (Blue LED)  → PWM0_A0_P3_0   = FlexPWM0 SM0 PWMA  (ALT5)
+ *
+ * This overlay fades the Red LED using FlexPWM1 SM2 PWMA.
+ */
+
+#include <nxp/mcx/MCXA156VLL-pinctrl.h>
+#include <zephyr/dt-bindings/pwm/pwm.h>
+
+&pinctrl {
+	pinmux_flexpwm1_pwm2_led: pinmux_flexpwm1_pwm2_led {
+		group0 {
+			pinmux = <PWM1_A2_P3_12>;
+			slew-rate = "fast";
+			drive-strength = "low";
+		};
+	};
+};
+
+/ {
+	aliases {
+		pwm-led0 = &red_pwm_led;
+	};
+
+	pwm_leds {
+		compatible = "pwm-leds";
+		status = "okay";
+
+		red_pwm_led: pwm_led_0 {
+			/* flexpwm1_pwm2: SM2 channel 0 = PWMA = P3_12 = Red LED */
+			pwms = <&flexpwm1_pwm2 0 PWM_MSEC(20) PWM_POLARITY_INVERTED>;
+			label = "Red PWM LED";
+		};
+	};
+};
+
+&flexpwm1_pwm2 {
+	status = "okay";
+	pinctrl-0 = <&pinmux_flexpwm1_pwm2_led>;
+	pinctrl-names = "default";
+};
+
+/* Release GPIO claim on P3_12 so PWM owns the pin */
+&red_led {
+	status = "disabled";
+};
