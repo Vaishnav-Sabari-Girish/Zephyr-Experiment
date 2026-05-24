@@ -8,3 +8,4 @@
 4. [Threads and Semaphores](./threads_semaphores/src/main.c)
 5. [Message Queue](./message_queue/src/main.c)
 6. [UART Shell](./uart_shell/src/main.c)
+7. [Sensors](./sensors/README.md)
