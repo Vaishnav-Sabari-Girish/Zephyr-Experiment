@@ -10,3 +10,4 @@
 6. [UART Shell](./uart_shell/src/main.c)
 7. [Sensors](./sensors/README.md)
 8. [PWM](./pwm_led/README.md)
+9. [Non-volatile storage](./nvs/src/main.c)
