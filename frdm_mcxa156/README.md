@@ -12,3 +12,4 @@
 8. [PWM](./pwm_led/README.md)
 9. [Non-volatile storage](./nvs/src/main.c)
 10. [Watchdog Timer](./watchdog_timer/src/main.c)
+11. [State Machines](./state_machines/src/main.c)
