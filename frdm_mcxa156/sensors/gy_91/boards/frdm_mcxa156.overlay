@@ -1,0 +1,32 @@
+/*
+* GY-91 module: MPU9250 + BME280 sensor (Sharing same I2C bus)
+*   GY-91 VCC -> 3.3V
+*   GY-91 GND -> GND
+*   GY-91 SCL -> P3_27
+*   GY-91 SDA -> P3_28
+*/ 
+
+&lpi2c3 {
+  status = "okay";
+
+  mpu9250@68 {
+    compatible = "invensense,mpu9250";
+    reg = <0x68>;
+    status = "okay";
+
+    /* Gyro: +- 2000dps, DLPF 186 Hz, sample rate divider 0 */
+    gyro-fs = <2000>;
+    gyro-dlpf = <184>;
+    gyro-sr-div = <0>;
+
+    /* Accel: +- 16g, DLPF 218.1 Hz*/
+    accel-fs = <16>;
+    accel-dlpf = "218.1";
+  };
+
+  bmp280@76 {
+    compatible = "bosch,bme280";
+    reg = <0x76>;
+    status = "okay";
+  };
+};
