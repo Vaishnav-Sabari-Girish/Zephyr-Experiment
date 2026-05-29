@@ -1,4 +1,4 @@
-# Programs for Nordic nrf52830dk
+# Programs for Nordic nrf52840dk
 
 ## Commands
 
@@ -6,7 +6,7 @@
 
 ```bash
 cd <program>
-west build -p always -b nrf52830dk/nrf52830dk <program>
+west build -p always -b nrf52840dk/nrf52840dk <program>
 west flash
 ```
 

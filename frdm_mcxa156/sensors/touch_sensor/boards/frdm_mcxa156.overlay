@@ -1,0 +1,15 @@
+/ {
+  aliases {
+    touch0 = &touch_sensor;
+  };
+
+  gpio_keys {
+    compatible = "gpio-keys";
+    status = "okay";
+
+    touch_sensor: touch_sensor_node {
+      gpios = <&gpio1 4 GPIO_ACTIVE_HIGH>;
+      label = "Capacitive Touch Sensor";
+    };
+  };
+};
