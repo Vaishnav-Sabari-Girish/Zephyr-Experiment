@@ -1,0 +1,10 @@
+/ {
+  dht22 {
+    compatible = "aosong,dht";
+    status = "okay";
+
+    dio-gpios = <&gpio1 4 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>;
+
+    dht22;
+  };
+};
