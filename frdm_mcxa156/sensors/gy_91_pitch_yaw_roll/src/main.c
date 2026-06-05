@@ -29,8 +29,8 @@ static const struct device *const mpu = DEVICE_DT_GET(MPU9250_NODE);
 #define M_PI 3.14159265358979323846f
 #endif
 
-#define MAHONY_KP     0.5f
-#define MAHONY_KI     0.005f
+#define MAHONY_KP     5.0f
+#define MAHONY_KI     0.0f
 #define MAHONY_DT_MIN 0.001f
 
 static float q[4] = { 1.0f, 0.0f, 0.0f, 0.0f };  /* w, x, y, z */
@@ -216,13 +216,13 @@ int main(void)
 		last_ts = now;
 
 		/* ── filter ── */
-		mahony_update(gx, gy, gz, ax, ay, az, mx, my, mz, dt);
+		mahony_update(gx, gy, gz, ax, ay, az, 0.0f, 0.0f, 0.0f, dt);
 		quat_to_euler(q[0], q[1], q[2], q[3],
 			      &yaw, &pitch, &roll);
 
-		/* ── print ~20 Hz, Arduino‑style ── */
+		/* ── print ~50 Hz── */
 		static int cnt;
-		if (++cnt >= 5) {
+		if (++cnt >= 2) {
 			cnt = 0;
 			printk("Pitch: %.2f, Yaw: %.2f, Roll: %.2f\n",
 			       (double)pitch, (double)yaw, (double)roll);
