@@ -24,7 +24,7 @@ void main(string[] args) {
     }
 
     string searchTerm = args[1].toLower();
-    string[] targetDirs = ["nucleo-l433rc-p", "nrf52840dk", "frdm_mcxa156"];
+    string[] targetDirs = ["nucleo-l433rc-p", "nrf52840dk", "frdm_mcxa156", "frdm_mcxn236"];
 
     writeln("🌳 Searching hardware tree for ".blue.bold, searchTerm.magenta.bold, "...\n".blue.bold);
 

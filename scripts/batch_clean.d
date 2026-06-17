@@ -13,7 +13,7 @@ import std.algorithm : canFind;
 import colored;
 
 void main() {
-    string[] targetDirs = ["nucleo-l433rc-p", "nrf52840dk", "frdm_mcxa156"];
+    string[] targetDirs = ["nucleo-l433rc-p", "nrf52840dk", "frdm_mcxa156", "frdm_mcxn236"];
     string rootBuildDir = "build";
 
     writeln("🧹 Starting Zephyr Batch Cleaner...".blue.bold);

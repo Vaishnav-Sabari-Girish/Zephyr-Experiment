@@ -28,7 +28,7 @@ void main(string[] args) {
         searchTerm = "CONFIG_" ~ searchTerm;
     }
 
-    string[] targetDirs = ["nucleo-l433rc-p", "nrf52840dk", "frdm_mcxa156"];
+    string[] targetDirs = ["nucleo-l433rc-p", "nrf52840dk", "frdm_mcxa156", "frdm_mcxn236"];
 
     writeln("🔍 Searching for ".blue.bold, searchTerm.magenta.bold, " across built projects...\n".blue.bold);
 
