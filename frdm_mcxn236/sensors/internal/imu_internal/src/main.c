@@ -47,11 +47,11 @@ int main(void)
     sensor_channel_get(accel, SENSOR_CHAN_ACCEL_Y, &y);
     sensor_channel_get(accel, SENSOR_CHAN_ACCEL_Z, &z);
 
+    LOG_INF("X=%d.%02d  Y=%d.%02d  Z=%d.%02d", x.val1, x.val2, y.val1, y.val2, z.val1, z.val2);
+
     double xg = sensor_value_to_double(&x);
     double yg = sensor_value_to_double(&y);
     double zg = sensor_value_to_double(&z);
-
-    LOG_INF("X=%.2f  Y=%.2f  Z=%.2f", xg, yg, zg);
 
     /* Upside Down */
     if (zg < -8.0) {
