@@ -4,7 +4,6 @@
 
 / {
 	aliases {
-		/* Map your C code's alias to the SoC's built-in temp node */
 		die-temp0 = &temp0;
 	};
 };
@@ -14,20 +13,21 @@
 	#address-cells = <1>;
 	#size-cells = <0>;
 
-	/* Software command buffer 0 */
 	channel@0 {
 		reg = <0>;
+		
+		/* Restored required gain property */
 		zephyr,gain = "ADC_GAIN_1";
+		
+		zephyr,vref-mv = <3300>; 
 		zephyr,reference = "ADC_REF_EXTERNAL0";
 		zephyr,acquisition-time = <ADC_ACQ_TIME(ADC_ACQ_TIME_TICKS, 131)>;
-		
-		/* Explicitly target the 'A' side of the temperature channel */
+		zephyr,oversampling = <4>; 
 		zephyr,input-positive = <MCUX_LPADC_CH26A>;
 		zephyr,resolution = <16>;
 	};
 };
 
-/* Target the base hardware node defined in the MCXN dtsi */
 &temp0 {
 	status = "okay";
 	io-channels = <&lpadc0 0>;
