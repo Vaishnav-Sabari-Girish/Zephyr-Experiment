@@ -6,6 +6,8 @@ comply with Zephyr's modern NXP ADC architecture.
 
 [Code File](./src/main.c)
 
+[Overlay File](./boards/frdm_mcxn236.overlay)
+
 ## Output format (using Zephyr Logging)
 
 ```text
