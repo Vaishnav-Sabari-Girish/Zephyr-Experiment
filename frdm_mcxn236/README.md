@@ -8,3 +8,4 @@
    - On-Board
      - [FXLS8974 Accelerometer](./sensors/internal/imu_internal/src/main.c)
      - [Silicon Temperature (Die Temperature)](./sensors/internal/adc_silicon_temp/README.md)
+4. [OLED Display](./oled_display_simple/README.md)
