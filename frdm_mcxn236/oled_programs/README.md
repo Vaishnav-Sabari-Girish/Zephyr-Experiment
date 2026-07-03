@@ -6,4 +6,4 @@
 4. [Crosshair and Bubble Level](./oled_crosshair_accel/README.md)
 5. [Multiple screens (Screen switching and Interactive menu)](./oled_interactive_menu/README.md)
 6. [OLED UART Shell (Display whatever you type in the UART Shell)](./oled_uart_shell/README.md)
-7. [OLED display test using LVGL](./oled_lvgl/README.md)
+7. [LVGL Programs](./lvgl_programs/README.md)
