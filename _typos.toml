@@ -4,7 +4,7 @@ zephyr = "zephyr"
 ZEPHYR = "ZEPHYR"
 RTOS = "RTOS"
 CMake = "CMake"
-
+ser = "ser"
 
 [files]
 extend-exclude = ["CHANGELOG.md"]
